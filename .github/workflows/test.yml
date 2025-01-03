@@ -1,0 +1,39 @@
+# ワークフロー名を指定
+name: Python Tests
+
+# トリガー条件を指定
+on:
+  push:  # コードがプッシュされたときに実行
+    branches:
+      - main  # main ブランチへのプッシュが対象
+  pull_request:  # プルリクエストが作成されたときに実行
+    branches:
+      - main  # main ブランチに対するプルリクエストが対象
+
+# ジョブを定義
+jobs:
+  test:  # ジョブ名を "test" に設定
+    runs-on: ubuntu-latest  # テストを実行する環境を Ubuntu 最新バージョンに設定
+
+    steps:
+      # 1. リポジトリのコードをチェックアウト
+      - name: Check out code
+        uses: actions/checkout@v3  # GitHub の公式アクションを使用してリポジトリのコードを取得
+
+      # 2. Python をセットアップ
+      - name: Set up Python
+        uses: actions/setup-python@v4  # GitHub の公式アクションを使用して Python をセットアップ
+        with:
+          python-version: '3.9'  # 使用する Python のバージョンを指定
+
+      # 3. 必要な依存関係をインストール
+      - name: Install dependencies
+        run: |  # シェルコマンドを実行
+          python -m pip install --upgrade pip  # pip を最新バージョンにアップグレード
+          pip install pytest  # テストフレームワーク pytest をインストール
+
+      # 4. テストを実行
+      - name: Run tests
+        run: |
+          # PYTHONPATH にプロジェクトのルートディレクトリを設定してから pytest を実行
+          PYTHONPATH=$(pwd) pytest tests  # カレントディレクトリを PYTHONPATH に設定し、tests ディレクトリ内のテストを実行
